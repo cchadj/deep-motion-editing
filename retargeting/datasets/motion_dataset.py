@@ -13,10 +13,10 @@ class MotionData(Dataset):
     Clip long dataset into fixed length window for batched training
     each data is a 2d tensor with shape (Joint_num*3) * Time
     """
-    def __init__(self, args):
+    def __init__(self, args, prefix="./datasets/Mixamo/"):
         super(MotionData, self).__init__()
         name = args.dataset
-        file_path = './datasets/Mixamo/{}.npy'.format(name)
+        file_path = os.path.join(prefix, f"{name}.npy")
 
         if args.debug:
             file_path = file_path[:-4] + '_debug' + file_path[-4:]

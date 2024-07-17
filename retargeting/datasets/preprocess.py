@@ -4,6 +4,7 @@ import copy
 from datasets.bvh_parser import BVH_file
 from datasets.motion_dataset import MotionData
 from option_parser import get_args, try_mkdir
+from argparse import ArgumentParser
 
 
 def collect_bvh(data_path, character, files):
@@ -23,13 +24,13 @@ def collect_bvh(data_path, character, files):
     print('Npy file saved at {}'.format(save_file))
 
 
-def write_statistics(character, path):
+def write_statistics(character, path, prefix="./datasets/Mixamo/"):
     args = get_args()
     new_args = copy.copy(args)
     new_args.data_augment = 0
     new_args.dataset = character
 
-    dataset = MotionData(new_args)
+    dataset = MotionData(new_args, prefix)
 
     mean = dataset.mean
     var = dataset.var
@@ -49,7 +50,11 @@ def copy_std_bvh(data_path, character, files):
 
 
 if __name__ == '__main__':
-    prefix = './datasets/Mixamo/'
+    parser = ArgumentParser()
+    parser.add_argument("--prefix", type=str, default='./datasets/Mixamo/',)
+    args = parser.parse_args()
+
+    prefix: str = args.prefix
     characters = [f for f in os.listdir(prefix) if os.path.isdir(os.path.join(prefix, f))]
     if 'std_bvhs' in characters: characters.remove('std_bvhs')
     if 'mean_var' in characters: characters.remove('mean_var')
@@ -63,4 +68,4 @@ if __name__ == '__main__':
 
         collect_bvh(prefix, character, files)
         copy_std_bvh(prefix, character, files)
-        write_statistics(character, './datasets/Mixamo/mean_var/')
+        write_statistics(character, f'{prefix}/mean_var/', prefix=prefix)
