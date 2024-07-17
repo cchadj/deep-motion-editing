@@ -1,6 +1,11 @@
 import os
+import shutil
+
 import numpy as np
 import copy
+
+from typing import List
+
 from datasets.bvh_parser import BVH_file
 from datasets.motion_dataset import MotionData
 from option_parser import get_args, try_mkdir
@@ -41,12 +46,13 @@ def write_statistics(character, path, prefix="./datasets/Mixamo/"):
     np.save(path + '{}_var.npy'.format(character), var)
 
 
-def copy_std_bvh(data_path, character, files):
+def copy_std_bvh(data_path: str, character: str, files: List[str]):
     """
     copy an arbitrary bvh file as a static information (skeleton's offset) reference
     """
-    cmd = 'cp \"{}\" ./datasets/Mixamo/std_bvhs/{}.bvh'.format(data_path + character + '/' + files[0], character)
-    os.system(cmd)
+    arbitrary_bvh_file_src = os.path.join(data_path, character, files[0])
+    reference_bvh_file_tgt = os.path.join(data_path, "std_bvhs", f"{character}.bvh")
+    shutil.copy(arbitrary_bvh_file_src, reference_bvh_file_tgt)
 
 
 if __name__ == '__main__':
